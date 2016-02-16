@@ -25,7 +25,7 @@ Take a look on code.
 require('yamvish-transition');
 
 y.view()
-.use('transition:slideUp', { ms:400, max:'100vh' })
+.use('transition:slide-up', { ms:400, max:'100vh' })
 .div('...');
 ```
 
