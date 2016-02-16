@@ -28,6 +28,9 @@ function cssTransition(opt) {
 						done();
 					});
 				};
+				container.beforeUnmount(function(done) {
+					this.transitionOut(done);
+				});
 			})
 			.on('mounted', function(container) {
 				if (timeout)
@@ -35,11 +38,6 @@ function cssTransition(opt) {
 				// wait a bit before launching animation just after mount (else sometimes it doesn't start)
 				timeout = setTimeout(function() { container.transitionIn(); }, 15);
 			})
-			.dom(function(context, container) {
-				container.beforeUnmount(function(done) {
-					container.transitionOut(done);
-				});
-			});
 	}
 };
 
