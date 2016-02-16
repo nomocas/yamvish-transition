@@ -6,48 +6,6 @@
  */
 var y = require('yamvish');
 
-function slideDown(elem, maxHeight) {
-	elem.style.maxHeight = maxHeight;
-	elem.style.opacity = '1';
-}
-
-function slideUp(elem, ms, done) {
-	elem.style.maxHeight = '0';
-	return setTimeout(function() {
-		elem.style.opacity = '0';
-		if (done) done();
-	}, ms);
-}
-//___________________________________________
-
-function slideRight(elem, max) {
-	elem.style.maxWidth = max;
-	elem.style.opacity = '1';
-}
-
-function slideLeft(elem, ms, done) {
-	elem.style.maxWidth = '0';
-	return setTimeout(function() {
-		elem.style.opacity = '0';
-		if (done) done();
-	}, ms);
-}
-//___________________________________________
-
-function fadeIn(elem) {
-	elem.style.opacity = '1';
-}
-
-function fadeOut(elem, ms, done) {
-	elem.style.opacity = '0';
-	return setTimeout(function() {
-		elem.style.opacity = '0';
-		if (done) done();
-	}, ms);
-}
-
-//___________________________________________
-
 function cssTransition(opt) {
 	return function(args) {
 		var timeout;
@@ -100,8 +58,17 @@ y.toAPI('transition', {
 		prop: 'height',
 		transitionProp: 'max-height',
 		styleMax: 'maxHeight',
-		close: slideUp,
-		open: slideDown,
+		close: function(elem, ms, done) {
+			elem.style.maxHeight = '0';
+			return setTimeout(function() {
+				elem.style.opacity = '0';
+				if (done) done();
+			}, ms);
+		},
+		open: function(elem, max) {
+			elem.style.maxHeight = max;
+			elem.style.opacity = '1';
+		},
 		initStyles: initSlideStyles
 	}),
 	// template.use('transition:slide-left', { ms: 300, max: '100vw' })
@@ -109,14 +76,31 @@ y.toAPI('transition', {
 		prop: 'width',
 		transitionProp: 'max-width',
 		styleMax: 'maxWidth',
-		close: slideLeft,
-		open: slideRight,
+		close: function(elem, ms, done) {
+			elem.style.maxWidth = '0';
+			return setTimeout(function() {
+				elem.style.opacity = '0';
+				if (done) done();
+			}, ms);
+		},
+		open: function(elem, max) {
+			elem.style.maxWidth = max;
+			elem.style.opacity = '1';
+		},
 		initStyles: initSlideStyles
 	}),
 	// template.use('transition:fade', { ms: 300 })
 	fade: cssTransition({
-		close: fadeOut,
-		open: fadeIn,
+		close: function(elem, ms, done) {
+			elem.style.opacity = '0';
+			return setTimeout(function() {
+				elem.style.opacity = '0';
+				if (done) done();
+			}, ms);
+		},
+		open: function(elem) {
+			elem.style.opacity = '1';
+		},
 		initStyles: function(el, opt, args) {
 			el.style.display = 'block';
 			el.style.opacity = 0;
