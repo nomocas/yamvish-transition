@@ -9,7 +9,7 @@ var y = require('yamvish');
 function cssTransition(opt) {
 	return function(args) {
 		var timeout;
-		return this.once('mounted', function(container) {
+		return this.once('mounted', function(context, container) {
 				var el = container.firstChild;
 				opt.initStyles(el, opt, args);
 				container.transitionIn = function(value) {
@@ -32,7 +32,7 @@ function cssTransition(opt) {
 					this.transitionOut(done);
 				});
 			})
-			.on('mounted', function(container) {
+			.on('mounted', function(context, container) {
 				if (timeout)
 					clearTimeout(timeout);
 				// wait a bit before launching animation just after mount (else sometimes it doesn't start)
