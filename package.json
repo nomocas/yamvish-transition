@@ -1,6 +1,6 @@
 {
   "name": "yamvish-transition",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "css transition manager for yamvish views and containers",
   "main": "index.js",
   "scripts": {
