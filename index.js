@@ -1,12 +1,12 @@
 /**  
  * @author Gilles Coomans <gilles.coomans@gmail.com> 
  *
- * yamvish Container css3 transition manager.
+ * yamvish transitions manager linked to container mount and unmount mecanism (so only for dom output).
  * inspired from https://gist.github.com/ludder/4226288
  */
 var y = require('yamvish');
 
-function cssTransition(opt) {
+function transition(opt) {
 	return function(args) {
 		args = args || {};
 		args.delay = args.delay || 15;
@@ -14,26 +14,52 @@ function cssTransition(opt) {
 		var timeout;
 		return this.once('mounted', function(context, container) {
 				var el = container.firstChild;
-				opt.initStyles(el, opt, args);
+				if (opt.initStyles)
+					opt.initStyles(el, opt, args);
 				if (args.bindToParent)
-					if (container.parent && container.parent._subtransitioned) {
+					if (container.parent) {
 						container.addWitness('subtransitioned child');
+						container.parent._subtransitioned = container.parent._subtransitioned || [];
 						container.parent._subtransitioned.push(container);
 					} else
-						throw new Error('could not bind transition to parent container : no parent or parent is not subtransitioned');
+						throw new Error('could not bind transition to parent container : no parent found');
 				container.transitionIn = function(value) {
 					this.closing = false;
 					if (timeout)
 						clearTimeout(timeout);
 					timeout = null;
 					opt.open(el, value !== undefined ? value : args.max);
+					if (this._subtransitioned) {
+						this._subtransitioned.forEach(function(sub) {
+							sub.remount();
+						});
+					}
 				};
 				if (opt.close) {
 					container.transitionOut = function(done) {
 						this.closing = true;
 						if (timeout)
 							clearTimeout(timeout);
+						var promises = [],
+							resolver;
+						promises.push(new Promise(function(resolve) {
+							resolver = resolve;
+						}));
 						timeout = opt.close(el, args.ms || 400, function() {
+							resolver(true);
+							console.log('container closed and resolved')
+						});
+						if (this._subtransitioned)
+							this._subtransitioned.forEach(function(sub) {
+								var p = new Promise(function(resolve) {
+									sub.unmount(true, function() {
+										resolve(true);
+										console.log('sub closed')
+									});
+								});
+								promises.push(p);
+							});
+						Promise.all(promises).then(function() {
 							if (!container.closing)
 								return;
 							container.closing = false;
@@ -64,8 +90,8 @@ function initSlideStyles(el, opt, args) {
 }
 
 y.toAPI('transition', {
-	// template.use('transition:slide-up', { ms: 300, max: '100vh' })
-	'slide-up': cssTransition({
+	// usage : template.use('transition:slide-up', { ms: 300, max: '100vh' })
+	'slide-up': transition({
 		prop: 'height',
 		transitionProp: 'max-height',
 		styleMax: 'maxHeight',
@@ -83,7 +109,7 @@ y.toAPI('transition', {
 		initStyles: initSlideStyles
 	}),
 	// template.use('transition:slide-left', { ms: 300, max: '100vw' })
-	'slide-left': cssTransition({
+	'slide-left': transition({
 		prop: 'width',
 		transitionProp: 'max-width',
 		styleMax: 'maxWidth',
@@ -101,7 +127,7 @@ y.toAPI('transition', {
 		initStyles: initSlideStyles
 	}),
 	// template.use('transition:fade', { ms: 300 })
-	fade: cssTransition({
+	fade: transition({
 		close: function(elem, ms, done) {
 			elem.style.opacity = '0';
 			return setTimeout(function() {
@@ -118,8 +144,9 @@ y.toAPI('transition', {
 			el.style.transition = 'opacity ' + (args.ms ||  400) + 'ms ' + (args.ease || 'ease-in-out') + ' 0s';
 		}
 	}),
-	// template.use('transition:fade', { ms: 300 })
-	'fade-in': cssTransition({
+	// template.use('transition:fade-in', { ms: 300 })
+	// no fade-out.
+	'fade-in': transition({
 		open: function(elem) {
 			elem.style.opacity = '1';
 		},
@@ -129,49 +156,14 @@ y.toAPI('transition', {
 			el.style.transition = 'opacity ' + (args.ms ||  400) + 'ms ' + (args.ease || 'ease-in-out') + ' 0s';
 		}
 	}),
-	subtransitioned: function(bindToParent) {
-		return this.once('mounted', function(context, container) {
-				container._subtransitioned = [];
-				if (bindToParent)
-					if (container.parent && container.parent._subtransitioned)
-						container.parent._subtransitioned.push(container);
-					else
-						throw new Error('could not bind transition to parent container : no parent or parent is not subtransitioned');
-				var initialised = false;
-				container.transitionIn = function(value) {
-					this.closing = false;
-					if (!initialised) {
-						initialised = true;
-						return;
-					}
-					this._subtransitioned.forEach(function(sub) {
-						sub.remount();
-					});
-				};
-				container.transitionOut = function(done) {
-					this.closing = true;
-					var promises = [];
-					this._subtransitioned.forEach(function(sub) {
-						var p = new Promise(function(resolve) {
-							sub.unmount(true, function() {
-								resolve(true);
-							});
-						});
-						promises.push(p);
-					});
-					Promise.all(promises).then(function() {
-						if (!container.closing)
-							return;
-						container.closing = false;
-						done();
-					});
-				};
-				container.beforeUnmount(function(done) {
-					this.transitionOut(done);
-				});
-			})
-			.on('mounted', function(context, container) {
-				container.transitionIn();
-			});
-	}
+	// template.use('transition:cut')
+	// useful for cascading transition management.
+	cut: transition({
+		open: function(elem) {},
+		close: function(elem, ms, done) {
+			return setTimeout(function() {
+				if (done) done();
+			}, ms);
+		}
+	})
 });
