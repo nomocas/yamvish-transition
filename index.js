@@ -47,14 +47,12 @@ function transition(opt) {
 						}));
 						timeout = opt.close(el, args.ms || 400, function() {
 							resolver(true);
-							console.log('container closed and resolved')
 						});
 						if (this._subtransitioned)
 							this._subtransitioned.forEach(function(sub) {
 								var p = new Promise(function(resolve) {
 									sub.unmount(true, function() {
 										resolve(true);
-										console.log('sub closed')
 									});
 								});
 								promises.push(p);
