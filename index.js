@@ -165,7 +165,7 @@ module.exports = y.toAPI('transition', {
 		});
 	},
 	// usage : template.use('transition:slide-up', { ms: 300, max: '100vh' })
-	'slide-up': transition({
+	slideUp: transition({
 		prop: 'height',
 		transitionProp: 'max-height',
 		styleMax: 'maxHeight',
@@ -183,7 +183,7 @@ module.exports = y.toAPI('transition', {
 		initStyles: initSlideStyles
 	}),
 	// template.use('transition:slide-left', { ms: 300, max: '100vw' })
-	'slide-left': transition({
+	slideLeft: transition({
 		prop: 'width',
 		transitionProp: 'max-width',
 		styleMax: 'maxWidth',
@@ -216,7 +216,7 @@ module.exports = y.toAPI('transition', {
 	}),
 	// template.use('transition:fade-in', { ms: 300 })
 	// no fade-out.
-	'fade-in': transition({
+	fadeIn: transition({
 		open: function(elem) {
 			elem.style.opacity = '1';
 		},
