@@ -115,8 +115,6 @@ function transition(opt) {
 		return this.dom(function(context, node, a, container) {
 			if (!container.transitionChildren)
 				prepareContainer(container);
-			if (args.bindToParent && !container.parentBinded)
-				bindTransitionToParent(container);
 			if (node.__yContainer__) {
 				if (node === container) {
 					if (!container.mounted)
