@@ -71,6 +71,8 @@ function prepareContainer(container) {
 
 // prepare dom node to in and out animation
 function prepareNode(el, args, opt) {
+	if (!el)
+		throw new Error('yamvish transition need dome node to apply animation !');
 	var timeout;
 	args.delay = args.delay || 5;
 	args.delay = Math.max(args.delay, 5);
