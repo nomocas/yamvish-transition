@@ -90,10 +90,15 @@ function prepareNode(el, args, opt) {
 		el.closing = true;
 		if (timeout)
 			clearTimeout(timeout);
-		timeout = opt.close(el, args.ms || 400, function() {
+		if (opt.close)
+			timeout = opt.close(el, args.ms || 400, function() {
+				el.closing = false;
+				done(true);
+			});
+		else {
 			el.closing = false;
 			done(true);
-		});
+		}
 	};
 }
 
