@@ -222,6 +222,10 @@ module.exports = y.toAPI('transition', {
 	// template.use('transition:fade-in', { ms: 300 })
 	// no fade-out.
 	fadeIn: transition({
+		close: function(elem, ms, done) {
+			elem.style.opacity = '0';
+			if (done) done();
+		},
 		open: function(elem) {
 			elem.style.opacity = '1';
 		},
