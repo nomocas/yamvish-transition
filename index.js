@@ -163,6 +163,11 @@ function initFadeStyles(el, opt, args) {
 }
 
 module.exports = y.toAPI('transition', {
+	/**
+	 * bindTransitionToParent : bind current container transitions to parent container transition. 
+	 * When parent is (un)mounted, current container will do the same.
+	 * @return {[type]} [description]
+	 */
 	bindTransitionToParent: function() {
 		return this.dom(function(context, node, args, container) {
 			if (!container.parentBinded)
@@ -232,3 +237,5 @@ module.exports = y.toAPI('transition', {
 		initStyles: initFadeStyles
 	})
 });
+
+y.Template.addAPI(module.exports);
