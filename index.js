@@ -149,7 +149,7 @@ function transition(opt) {
 
 function initSlideStyles(el, opt, args) {
 	// el.style.display = 'block';
-	el.style.overflow = 'hidden';
+	// el.style.overflow = 'hidden';
 	el.style[opt.styleMax] = 0;
 	el.style[opt.prop] = args.max;
 	el.style.opacity = 0;
