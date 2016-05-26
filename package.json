@@ -17,9 +17,7 @@
     "slideLeft",
     "views"
   ],
-  "dependencies": {
-    "yamvish": "^0.10.3"
-  },
+  "dependencies": {},
   "author": "Gilles Coomans <gilles.coomans@gmail.com>",
   "license": "MIT",
   "bugs": {
