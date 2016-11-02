@@ -59,7 +59,9 @@ function prepareContainer(container) {
 		if (timeout)
 			clearTimeout(timeout);
 		// wait a bit before launching animation just after mount (else sometimes it doesn't start)
-		timeout = setTimeout(function() { container.transitionIn(); }, 15);
+		timeout = setTimeout(function() {
+			container.transitionIn();
+		}, 15);
 	});
 
 	// for destruction
@@ -149,7 +151,7 @@ function transition(opt) {
 
 function initSlideStyles(el, opt, args) {
 	// el.style.display = 'block';
-	// el.style.overflow = 'hidden';
+	el.style.overflow = 'hidden';
 	el.style[opt.styleMax] = 0;
 	el.style[opt.prop] = args.max;
 	el.style.opacity = 0;
@@ -163,11 +165,6 @@ function initFadeStyles(el, opt, args) {
 }
 
 module.exports = y.toAPI('transition', {
-	/**
-	 * bindTransitionToParent : bind current container transitions to parent container transition. 
-	 * When parent is (un)mounted, current container will do the same.
-	 * @return {[type]} [description]
-	 */
 	bindTransitionToParent: function() {
 		return this.dom(function(context, node, args, container) {
 			if (!container.parentBinded)
@@ -219,8 +216,8 @@ module.exports = y.toAPI('transition', {
 				if (done) done();
 			}, ms);
 		},
-		open: function(elem) {
-			elem.style.opacity = '1';
+		open: function(elem, max) {
+			elem.style.opacity = max || '1';
 		},
 		initStyles: initFadeStyles
 	}),
@@ -231,11 +228,9 @@ module.exports = y.toAPI('transition', {
 			elem.style.opacity = '0';
 			if (done) done();
 		},
-		open: function(elem) {
-			elem.style.opacity = '1';
+		open: function(elem, max) {
+			elem.style.opacity = max || '1';
 		},
 		initStyles: initFadeStyles
 	})
 });
-
-y.Template.addAPI(module.exports);
